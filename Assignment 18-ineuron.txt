@@ -1,0 +1,513 @@
+1.Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input.
+Input: intervals = [[1,3],[2,6],[8,10],[15,18]]
+Output: [[1,6],[8,10],[15,18]]
+Explanation: Since intervals [1,3] and [2,6] overlap, merge them into [1,6].
+
+Input: intervals = [[1,4],[4,5]]
+Output: [[1,5]]
+Explanation: Intervals [1,4] and [4,5] are considered overlapping.
+
+**Constraints:**
+
+- `1 <= intervals.length <= 10000`
+- `intervals[i].length == 2`
+- `0 <= starti <= endi <= 10000`
+
+ans-:
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class MergeIntervals {
+    public int[][] merge(int[][] intervals) {
+        if (intervals.length <= 1) {
+            return intervals;
+        }
+
+        // Sort the intervals based on the start time
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+
+        List<int[]> merged = new ArrayList<>();
+        merged.add(intervals[0]);
+
+        for (int i = 1; i < intervals.length; i++) {
+            int[] current = intervals[i];
+            int[] lastMerged = merged.get(merged.size() - 1);
+
+            // Check if the current interval overlaps with the last merged interval
+            if (current[0] <= lastMerged[1]) {
+                lastMerged[1] = Math.max(lastMerged[1], current[1]); // Merge intervals by updating the end time
+            } else {
+                merged.add(current); // Add the current interval to the result list
+            }
+        }
+
+        return merged.toArray(new int[merged.size()][]);
+    }
+
+    public static void main(String[] args) {
+        MergeIntervals mergeIntervals = new MergeIntervals();
+
+        int[][] intervals1 = { { 1, 3 }, { 2, 6 }, { 8, 10 }, { 15, 18 } };
+        int[][] mergedIntervals1 = mergeIntervals.merge(intervals1);
+        System.out.println(Arrays.deepToString(mergedIntervals1));
+
+        int[][] intervals2 = { { 1, 4 }, { 4, 5 } };
+        int[][] mergedIntervals2 = mergeIntervals.merge(intervals2);
+        System.out.println(Arrays.deepToString(mergedIntervals2));
+    }
+}
+2.<aside>
+💡  **Sort Colors**
+
+Given an array `nums` with `n` objects colored red, white, or blue, sort them **[in-place](https://en.wikipedia.org/wiki/In-place_algorithm)** so that objects of the same color are adjacent, with the colors in the order red, white, and blue.
+
+We will use the integers `0`, `1`, and `2` to represent the color red, white, and blue, respectively.
+
+You must solve this problem without using the library's sort function.
+
+
+Input: nums = [2,0,2,1,1,0]
+Output: [0,0,1,1,2,2]
+
+Input: nums = [2,0,1]
+Output: [0,1,2]
+
+**Constraints:**
+
+- `n == nums.length`
+- `1 <= n <= 300`
+- `nums[i]` is either `0`, `1`, or `2`.
+
+ans-:
+public class SortColors {
+    public void sortColors(int[] nums) {
+        int low = 0;
+        int mid = 0;
+        int high = nums.length - 1;
+
+        while (mid <= high) {
+            if (nums[mid] == 0) {
+                swap(nums, low, mid);
+                low++;
+                mid++;
+            } else if (nums[mid] == 1) {
+                mid++;
+            } else if (nums[mid] == 2) {
+                swap(nums, mid, high);
+                high--;
+            }
+        }
+    }
+
+    private void swap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
+
+    public static void main(String[] args) {
+        SortColors sortColors = new SortColors();
+
+        int[] nums1 = {2, 0, 2, 1, 1, 0};
+        sortColors.sortColors(nums1);
+        System.out.println(Arrays.toString(nums1));
+
+        int[] nums2 = {2, 0, 1};
+        sortColors.sortColors(nums2);
+        System.out.println(Arrays.toString(nums2));
+    }
+}
+3.
+💡 **First Bad Version Solution**
+
+You are a product manager and currently leading a team to develop a new product. Unfortunately, the latest version of your product fails the quality check. Since each version is developed based on the previous version, all the versions after a bad version are also bad.
+
+Suppose you have `n` versions `[1, 2, ..., n]` and you want to find out the first bad one, which causes all the following ones to be bad.
+
+You are given an API `bool isBadVersion(version)` which returns whether `version` is bad. Implement a function to find the first bad version. You should minimize the number of calls to the API.
+
+Input: n = 5, bad = 4
+Output: 4
+Explanation:
+call isBadVersion(3) -> false
+call isBadVersion(5) -> true
+call isBadVersion(4) -> true
+Then 4 is the first bad version.
+
+Input: n = 1, bad = 1
+Output: 1
+
+**Constraints:**
+
+- `1 <= bad <= n <= 2^31 - 1`
+
+
+ans-:
+public class FirstBadVersion {
+    public int firstBadVersion(int n) {
+        int left = 1;
+        int right = n;
+
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (isBadVersion(mid)) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        return left;
+    }
+
+    // Placeholder method for the isBadVersion API
+    private boolean isBadVersion(int version) {
+        // Implementation not provided
+        return false;
+    }
+
+    public static void main(String[] args) {
+        FirstBadVersion solution = new FirstBadVersion();
+
+        int n1 = 5;
+        int bad1 = 4;
+        int result1 = solution.firstBadVersion(n1);
+        System.out.println("First bad version: " + result1);
+
+        int n2 = 1;
+        int bad2 = 1;
+        int result2 = solution.firstBadVersion(n2);
+        System.out.println("First bad version: " + result2);
+    }
+}
+4.
+💡 **Maximum Gap**
+
+Given an integer array `nums`, return *the maximum difference between two successive elements in its sorted form*. If the array contains less than two elements, return `0`.
+
+You must write an algorithm that runs in linear time and uses linear extra space.
+
+Input: nums = [3,6,9,1]
+Output: 3
+Explanation: The sorted form of the array is [1,3,6,9], either (3,6) or (6,9) has the maximum difference 3.
+
+Input: nums = [10]
+Output: 0
+Explanation: The array contains less than 2 elements, therefore return 0.
+
+**Constraints:**
+
+- `1 <= nums.length <= 10^5`
+- `0 <= nums[i] <= 10^9`
+
+ans-:
+import java.util.Arrays;
+
+public class MaximumGap {
+    public int maximumGap(int[] nums) {
+        int n = nums.length;
+        if (n < 2) {
+            return 0;
+        }
+
+        int minValue = nums[0];
+        int maxValue = nums[0];
+        for (int num : nums) {
+            minValue = Math.min(minValue, num);
+            maxValue = Math.max(maxValue, num);
+        }
+
+        int bucketSize = Math.max(1, (maxValue - minValue) / (n - 1));
+        int bucketCount = (maxValue - minValue) / bucketSize + 1;
+
+        int[] minBucket = new int[bucketCount];
+        int[] maxBucket = new int[bucketCount];
+        Arrays.fill(minBucket, Integer.MAX_VALUE);
+        Arrays.fill(maxBucket, Integer.MIN_VALUE);
+
+        for (int num : nums) {
+            int bucketIndex = (num - minValue) / bucketSize;
+            minBucket[bucketIndex] = Math.min(minBucket[bucketIndex], num);
+            maxBucket[bucketIndex] = Math.max(maxBucket[bucketIndex], num);
+        }
+
+        int maxGap = 0;
+        int previousMax = minValue;
+        for (int i = 0; i < bucketCount; i++) {
+            if (minBucket[i] == Integer.MAX_VALUE && maxBucket[i] == Integer.MIN_VALUE) {
+                continue;
+            }
+            maxGap = Math.max(maxGap, minBucket[i] - previousMax);
+            previousMax = maxBucket[i];
+        }
+
+        return maxGap;
+    }
+
+    public static void main(String[] args) {
+        MaximumGap solution = new MaximumGap();
+
+        int[] nums1 = {3, 6, 9, 1};
+        int maxGap1 = solution.maximumGap(nums1);
+        System.out.println("Maximum Gap: " + maxGap1);
+
+        int[] nums2 = {10};
+        int maxGap2 = solution.maximumGap(nums2);
+        System.out.println("Maximum Gap: " + maxGap2);
+    }
+}
+5.Given an integer array nums, return true if any value appears at least twice in the array, and return false if every element is distinct.
+
+Input: nums = [1,2,3,1]
+Output: true
+
+Input: nums = [1,2,3,4]
+Output: false
+
+Input: nums = [1,1,1,3,3,4,3,2,4,2]
+Output: true
+
+**Constraints:**
+
+- `1 <= nums.length <= 10^5`
+- `109 <= nums[i] <= 10^9`
+
+ans-:
+import java.util.HashSet;
+
+public class ContainsDuplicate {
+    public boolean containsDuplicate(int[] nums) {
+        HashSet<Integer> set = new HashSet<>();
+        for (int num : nums) {
+            if (set.contains(num)) {
+                return true;
+            }
+            set.add(num);
+        }
+        return false;
+    }
+
+    public static void main(String[] args) {
+        ContainsDuplicate solution = new ContainsDuplicate();
+
+        int[] nums1 = {1, 2, 3, 1};
+        boolean containsDuplicate1 = solution.containsDuplicate(nums1);
+        System.out.println("Contains Duplicate: " + containsDuplicate1);
+
+        int[] nums2 = {1, 2, 3, 4};
+        boolean containsDuplicate2 = solution.containsDuplicate(nums2);
+        System.out.println("Contains Duplicate: " + containsDuplicate2);
+
+        int[] nums3 = {1, 1, 1, 3, 3, 4, 3, 2, 4, 2};
+        boolean containsDuplicate3 = solution.containsDuplicate(nums3);
+        System.out.println("Contains Duplicate: " + containsDuplicate3);
+    }
+}
+6.
+💡 **Minimum Number of Arrows to Burst Balloons**
+
+There are some spherical balloons taped onto a flat wall that represents the XY-plane. The balloons are represented as a 2D integer array `points` where `points[i] = [xstart, xend]` denotes a balloon whose **horizontal diameter** stretches between `xstart` and `xend`. You do not know the exact y-coordinates of the balloons.
+
+Arrows can be shot up **directly vertically** (in the positive y-direction) from different points along the x-axis. A balloon with `xstart` and `xend` is **burst** by an arrow shot at `x` if `xstart <= x <= xend`. There is **no limit** to the number of arrows that can be shot. A shot arrow keeps traveling up infinitely, bursting any balloons in its path.
+
+Given the array `points`, return *the **minimum** number of arrows that must be shot to burst all balloons*.
+
+Input: points = [[10,16],[2,8],[1,6],[7,12]]
+Output: 2
+Explanation: The balloons can be burst by 2 arrows:
+- Shoot an arrow at x = 6, bursting the balloons [2,8] and [1,6].
+- Shoot an arrow at x = 11, bursting the balloons [10,16] and [7,12].
+
+Input: points = [[1,2],[3,4],[5,6],[7,8]]
+Output: 4
+Explanation: One arrow needs to be shot for each balloon for a total of 4 arrows.
+
+Input: points = [[1,2],[2,3],[3,4],[4,5]]
+Output: 2
+Explanation: The balloons can be burst by 2 arrows:
+- Shoot an arrow at x = 2, bursting the balloons [1,2] and [2,3].
+- Shoot an arrow at x = 4, bursting the balloons [3,4] and [4,5].
+
+**Constraints:**
+
+- `1 <= points.length <= 10^5`
+- `points[i].length == 2`
+- `231 <= xstart < xend <= 2^31 - 1`
+
+ans-:
+import java.util.Arrays;
+
+public class MinimumArrowsToBurstBalloons {
+    public int findMinArrowShots(int[][] points) {
+        if (points == null || points.length == 0) {
+            return 0;
+        }
+
+        // Sort the balloons based on their end points in ascending order
+        Arrays.sort(points, (a, b) -> a[1] - b[1]);
+
+        int arrows = 1;
+        int end = points[0][1];
+
+        // Iterate through the remaining balloons and check for overlaps
+        for (int i = 1; i < points.length; i++) {
+            int start = points[i][0];
+            // Check if the current balloon is overlapping with the previous ones
+            if (start > end) {
+                arrows++;
+                end = points[i][1];
+            }
+        }
+
+        return arrows;
+    }
+
+    public static void main(String[] args) {
+        MinimumArrowsToBurstBalloons solution = new MinimumArrowsToBurstBalloons();
+
+        int[][] points1 = {{10, 16}, {2, 8}, {1, 6}, {7, 12}};
+        int minArrows1 = solution.findMinArrowShots(points1);
+        System.out.println("Minimum Arrows: " + minArrows1);
+
+        int[][] points2 = {{1, 2}, {3, 4}, {5, 6}, {7, 8}};
+        int minArrows2 = solution.findMinArrowShots(points2);
+        System.out.println("Minimum Arrows: " + minArrows2);
+
+        int[][] points3 = {{1, 2}, {2, 3}, {3, 4}, {4, 5}};
+        int minArrows3 = solution.findMinArrowShots(points3);
+        System.out.println("Minimum Arrows: " + minArrows3);
+    }
+}
+
+7.💡  **Longest Increasing Subsequence**
+
+Given an integer array `nums`, return *the length of the longest **strictly increasing***
+
+***subsequence***
+
+Input: nums = [10,9,2,5,3,7,101,18]
+Output: 4
+Explanation: The longest increasing subsequence is [2,3,7,101], therefore the length is 4.
+
+Input: nums = [0,1,0,3,2,3]
+Output: 4
+
+Input: nums = [7,7,7,7,7,7,7]
+Output: 1
+
+**Constraints:**
+
+- `1 <= nums.length <= 2500`
+- `-10^4 <= nums[i] <= 10^4`
+
+ans-:
+public class LongestIncreasingSubsequence {
+    public int lengthOfLIS(int[] nums) {
+        int n = nums.length;
+        int[] dp = new int[n];
+        Arrays.fill(dp, 1);
+
+        int maxLength = 1;
+
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            maxLength = Math.max(maxLength, dp[i]);
+        }
+
+        return maxLength;
+    }
+
+    public static void main(String[] args) {
+        LongestIncreasingSubsequence solution = new LongestIncreasingSubsequence();
+
+        int[] nums1 = {10, 9, 2, 5, 3, 7, 101, 18};
+        int length1 = solution.lengthOfLIS(nums1);
+        System.out.println("Length of Longest Increasing Subsequence: " + length1);
+
+        int[] nums2 = {0, 1, 0, 3, 2, 3};
+        int length2 = solution.lengthOfLIS(nums2);
+        System.out.println("Length of Longest Increasing Subsequence: " + length2);
+
+        int[] nums3 = {7, 7, 7, 7, 7, 7, 7};
+        int length3 = solution.lengthOfLIS(nums3);
+        System.out.println("Length of Longest Increasing Subsequence: " + length3);
+    }
+}
+8.
+💡 **132 Pattern**
+
+Given an array of `n` integers `nums`, a **132 pattern** is a subsequence of three integers `nums[i]`, `nums[j]` and `nums[k]` such that `i < j < k` and `nums[i] < nums[k] < nums[j]`.
+
+Return `true` *if there is a **132 pattern** in* `nums`*, otherwise, return* `false`*.*
+
+Input: nums = [1,2,3,4]
+Output: false
+Explanation: There is no 132 pattern in the sequence.
+
+Input: nums = [3,1,4,2]
+Output: true
+Explanation: There is a 132 pattern in the sequence: [1, 4, 2].
+
+Input: nums = [-1,3,2,0]
+Output: true
+Explanation: There are three 132 patterns in the sequence: [-1, 3, 2], [-1, 3, 0] and [-1, 2, 0].
+
+**Constraints:**
+
+- `n == nums.length`
+- `1 <= n <= 2 * 10^5`
+- `-10^9 <= nums[i] <= 10^9`
+
+ans-:
+import java.util.Stack;
+
+public class Pattern132 {
+    public boolean find132pattern(int[] nums) {
+        int n = nums.length;
+        Stack<Integer> stack = new Stack<>();
+        int second = Integer.MIN_VALUE;
+
+        for (int i = n - 1; i >= 0; i--) {
+            if (nums[i] < second) {
+                return true;
+            }
+
+            while (!stack.isEmpty() && nums[i] > stack.peek()) {
+                second = Math.max(second, stack.pop());
+            }
+
+            stack.push(nums[i]);
+        }
+
+        return false;
+    }
+
+    public static void main(String[] args) {
+        Pattern132 solution = new Pattern132();
+
+        int[] nums1 = {1, 2, 3, 4};
+        boolean found1 = solution.find132pattern(nums1);
+        System.out.println("132 pattern found: " + found1);
+
+        int[] nums2 = {3, 1, 4, 2};
+        boolean found2 = solution.find132pattern(nums2);
+        System.out.println("132 pattern found: " + found2);
+
+        int[] nums3 = {-1, 3, 2, 0};
+        boolean found3 = solution.find132pattern(nums3);
+        System.out.println("132 pattern found: " + found3);
+    }
+}
+
+
+
+
+
+
+
+
